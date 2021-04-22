@@ -8,7 +8,7 @@ import Image from "next/image";
 
 import styles from "./episode.module.scss";
 
-interface IEpisode {
+interface Episode {
   id: string;
   title: string;
   members: string;
@@ -20,11 +20,11 @@ interface IEpisode {
   description: string;
 }
 
-interface IEpisodeProps {
-  episode: IEpisode;
+interface EpisodeProps {
+  episode: Episode;
 }
 
-export default function Episode({ episode }: IEpisodeProps) {
+export default function Episode({ episode }: EpisodeProps) {
   return (
     <div className={styles.episode}>
       <div className={styles.thumbnailContainer}>
@@ -62,6 +62,22 @@ export default function Episode({ episode }: IEpisodeProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const { data } = await api.get("episodes", {
+    params: {
+      _limit: 2,
+      _sort: "published",
+      _order: "desc",
+    },
+  });
+
+  const paths = data.map((episode) => {
+    return {
+      params: {
+        slug: episode.id,
+      },
+    };
+  });
+
   return {
     paths: [],
     fallback: "blocking",
